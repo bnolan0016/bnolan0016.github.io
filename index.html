@@ -1,0 +1,71 @@
+<!doctype html>
+<html><head> <meta charset "UTF-8">
+    <title>students by major</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.2/handlebars.min.js"></script>
+</head>
+<body>
+
+  <h1>Select a Major</h1>
+  
+  <input type="button" id='ShowCIT' value="CIT Majors">
+  <input type="button" id='ShowBUS' value="Business Majors">
+
+  <div id="studentTable"></div>
+  
+  <h3>We filter our dataset by major</h3>
+
+  <script type="text/x-handlebars-template" id="tableTemplate">
+    <table cellspacing='15'>
+        <tr><th>Name</th><th>Major</th><th>Midterm</th><th>Final</th></tr>
+        {{#each rows}}
+              <tr>
+                  <td>{{name}}</td><td>{{major}}</td><td>{{midterm}}</td><td>{{final}}</td>
+              </tr>
+        {{/each}}
+    </table>
+  </script>
+
+
+<script>
+    var studentData = [];
+    
+    window.onload = async function() {
+        var url = "cit5students.json";
+        var response = await fetch(url);
+        if(response.ok) {
+            studentData = await response.json();
+
+
+            document.getElementById("ShowCIT").onclick = function() {
+                var citStudents = studentData.filter(function(student) {
+                    return student.major == "CIT";
+                });
+                showTable(citStudents);
+            };
+
+            document.getElementById("ShowBUS").onclick = function() {
+                var busStudents = studentData.filter(function(student) {
+                    return student.major == "BUS";
+                });
+                showTable(busStudents);
+            };
+
+        } else {
+            document.getElementById("studentTable").innerHTML = "Error, please try reloading the web page.";
+        }
+    };
+
+    function showTable(data) {
+        var templateText = document.getElementById("tableTemplate").innerHTML;
+
+        var compiledTemplate = Handlebars.compile(templateText);
+
+        var resultingHtml = compiledTemplate({ rows: data});
+
+        document.getElementById("studentTable").innerHTML = resultingHtml;
+    }
+</script>
+
+</body>
+</html>
